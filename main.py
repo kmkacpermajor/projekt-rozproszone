@@ -129,6 +129,7 @@ def RCV():
 
         if status.Get_tag() == Message.Type.ADD_TO_ROBBER_QUEUE.value:
             robber_queue.append((message.time, message.pid))
+            robber_queue.sort()
             print_colored(f"Added to robber_queue: {robber_queue}")
             OK_ROBBER_QUEUE(message.pid)
         elif status.Get_tag() == Message.Type.OK_ROBBER_QUEUE.value:
@@ -155,7 +156,7 @@ def robber():
         if PID not in [pid for _, pid in robber_queue]:
             ADD_TO_ROBBER_QUEUE()
             robber_queue.append((global_time, PID))
-            robber_queue = sorted(robber_queue, key=lambda x: (x[0], x[1]))
+            robber_queue.sort()
             print_colored(f"Added to robber_queue: {robber_queue}")
         RCV()
         if len(robber_queue) > 0 and len(house_queue) > 0 and accepted == NUM_PROCESSES - 2:
