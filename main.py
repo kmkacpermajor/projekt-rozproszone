@@ -37,6 +37,7 @@ class Message:
         ADD_TO_ROBBER_QUEUE = 1
         SEND_HOUSES = 2
         OK_ROBBER_QUEUE = 3
+        END = 4
 
     def __init__(self, msg_type=None, house_id=None, houses=None, time=None, pid=None):
         self.time = time if time is not None else self.increment_global_time()
@@ -91,6 +92,13 @@ def accept_to_robber_queue(message):
     robber_queue.sort()
     print_colored(f"Added to robber_queue: {robber_queue}", force=True)
     OK_ROBBER_QUEUE(message.pid)
+
+def END():
+    print_colored(f"Sending END message")
+    for i in range(NUM_PROCESSES):
+        if i != PID:
+            comm.send('', dest=i, tag=Message.Type.END.value)
+    sys.exit(1)
 
 def NEW():
     global house_id
@@ -154,6 +162,8 @@ def RCV():
             if message.house_id not in done:
                 house_queue.append(message.house_id)
                 print_colored(f"Added to house_queue: {house_queue}", force=True)
+        elif status.Get_tag() == Message.Type.END.value:
+            sys.exit(1)
 
 def process_house(house_id):
     global accepted, global_time
@@ -171,6 +181,7 @@ def robber():
         RCV()
         if len(accepted) > NUM_PROCESSES - 2:
             print_colored(f"{len(robber_queue)}, {len(house_queue)}, {accepted}",force=True)
+            END()
         if len(robber_queue) > 0 and len(house_queue) > 0 and len(accepted) == NUM_PROCESSES - 2:
             if robber_queue[0][1] == PID:
                 to_process = house_queue[0]
