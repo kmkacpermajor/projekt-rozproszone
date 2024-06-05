@@ -147,7 +147,7 @@ def RCV():
                 waiting.append(message)
         elif status.Get_tag() == Message.Type.OK_ROBBER_QUEUE.value:
             accepted += 1
-            print_colored(f"Incremented accepted from {message.pid}: {accepted}")
+            print_colored(f"Incremented accepted from {message.pid}: {accepted}", force=True)
         elif status.Get_tag() == Message.Type.SEND_HOUSES.value:
             done.extend([t[0] for t in message.houses])
             for house in message.houses:
@@ -159,7 +159,7 @@ def RCV():
         elif status.Get_tag() == Message.Type.NEW.value and message.pid == 0:
             if message.house_id not in done:
                 house_queue.append(message.house_id)
-                print_colored(f"Added to house_queue: {house_queue}", force=True)
+                print_colored(f"Added to house_queue: {house_queue}")
 
 def process_house(house_id):
     global accepted
