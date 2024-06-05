@@ -175,12 +175,12 @@ def robber():
             robber_queue.sort()
             print_colored(f"Added to robber_queue: {robber_queue}", force=True)
         RCV()
+        print(f"{len(robber_queue)}, {len(house_queue)}, {accepted}")
         if len(robber_queue) > 0 and len(house_queue) > 0 and accepted == NUM_PROCESSES - 2:
             if robber_queue[0][1] == PID:
                 to_process = house_queue[0]
                 SEND_HOUSES()
                 process_house(to_process)
-        print_colored("Finished loop", force=True)
 
 def observer():
     while True:
