@@ -155,7 +155,7 @@ def robber():
         if PID not in [pid for _, pid in robber_queue]:
             ADD_TO_ROBBER_QUEUE()
             robber_queue.append((global_time, PID))
-            robber_queue.sort()
+            robber_queue.sort(key=lambda x: (x[0], x[1]))
             print_colored(f"Added to robber_queue: {robber_queue}")
         RCV()
         if len(robber_queue) > 0 and len(house_queue) > 0 and accepted == NUM_PROCESSES - 2:
