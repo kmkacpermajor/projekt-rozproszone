@@ -137,6 +137,7 @@ def RCV():
             accepted += 1
             print_colored(f"Incremented accepted from {message.pid}: {accepted}")
         elif status.Get_tag() == Message.Type.SEND_HOUSES.value:
+            done.extend([t[0] for t in message.houses])
             for house in message.houses:
                 if house[1] == PID:
                     process_house(house[0])
@@ -151,7 +152,6 @@ def RCV():
 def process_house(house_id):
     global accepted
     accepted = 0
-    done.append(house_id)
     print_colored(f"Process {PID} on {HOSTNAME} is processing house {house_id}", force=True)
 
 def robber():
