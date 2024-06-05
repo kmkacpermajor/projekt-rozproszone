@@ -159,7 +159,7 @@ def RCV():
         elif status.Get_tag() == Message.Type.NEW.value and message.pid == 0:
             if message.house_id not in done:
                 house_queue.append(message.house_id)
-                print_colored(f"Added to house_queue: {house_queue}")
+                print_colored(f"Added to house_queue: {house_queue}", force=True)
 
 def process_house(house_id):
     global accepted
@@ -173,7 +173,7 @@ def robber():
             ADD_TO_ROBBER_QUEUE()
             robber_queue.append((global_time, PID))
             robber_queue.sort()
-            print_colored(f"Added to robber_queue: {robber_queue}")
+            print_colored(f"Added to robber_queue: {robber_queue}", force=True)
         RCV()
         if len(robber_queue) > 0 and len(house_queue) > 0 and accepted == NUM_PROCESSES - 2:
             if robber_queue[0][1] == PID:
