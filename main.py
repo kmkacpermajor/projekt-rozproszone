@@ -131,15 +131,6 @@ def RCV():
     global global_time, accepted, house_queue, robber_queue
     status = MPI.Status()
 
-    for message in waiting_acc:
-        if message.pid not in [pid for _, pid in robber_queue]:
-            accept_to_robber_queue(message)
-
-    for message in waiting_ok:
-        if message.pid not in accepted:
-            accepted.append(message.pid)
-            print_colored(f"Accepted from {message.pid}: {accepted}", force=True)
-
     while comm.Iprobe(source=MPI.ANY_SOURCE, status=status):
         data = comm.recv(source=status.Get_source(), tag=status.Get_tag())
         message = Message.deserialize(data)
@@ -147,16 +138,12 @@ def RCV():
         global_time = max(global_time, message.time)
 
         if status.Get_tag() == Message.Type.ADD_TO_ROBBER_QUEUE.value:
-            if message.pid not in [pid for _, pid in robber_queue]:
-                accept_to_robber_queue(message)
-            else:
-                waiting_acc.append(message)
+            # if message.pid not in [pid for _, pid in robber_queue]:
+            accept_to_robber_queue(message)
         elif status.Get_tag() == Message.Type.OK_ROBBER_QUEUE.value:
-            if message.pid not in accepted:
-                accepted.append(message.pid)
-                print_colored(f"Accepted from {message.pid}: {accepted}", force=True)
-            else:
-                waiting_ok.append(message)
+            # if message.pid not in accepted:
+            accepted.append(message.pid)
+            print_colored(f"Accepted from {message.pid}: {accepted}", force=True)
         elif status.Get_tag() == Message.Type.SEND_HOUSES.value:
             done.extend([t[0] for t in message.houses])
             for house in message.houses:
@@ -173,7 +160,6 @@ def RCV():
 def process_house(house_id):
     global accepted, global_time
     accepted = []
-    last_clear_time = global_time
     print_colored(f"Process {PID} on {HOSTNAME} is processing house {house_id}", force=True)
 
 def robber():
