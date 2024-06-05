@@ -184,10 +184,14 @@ def RCV():
 def process_house(house_id):
     global accepted, global_time
     accepted = []
+    seen_pids = set()
     print_colored(f"Process {PID} on {HOSTNAME} is processing house {house_id}", force=True)
-    for message in waiting_ok:
-        accepted.append(message.pid)
-        print_colored(f"Accepted from {message.pid}: {accepted}")
+    for message in waiting_ok[:]:  # Create a copy of the list to iterate over while modifying the original
+        if message.pid not in seen_pids:
+            seen_pids.add(message.pid)
+            accepted.append(message.pid)
+            waiting_ok.remove(message)
+            print_colored(f"Accepted from {message.pid}: {accepted}")
 
 def robber():
     global accepted
