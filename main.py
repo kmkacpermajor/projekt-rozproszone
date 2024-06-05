@@ -72,6 +72,14 @@ class Message:
         global_time += 1
         return global_time
 
+def remove_houses(original_list, elements_tuples_to_remove):
+    elements_to_remove = {element_tuple[0] for element_tuple in elements_tuples_to_remove}
+    return [item for item in original_list if item not in elements_to_remove]
+
+def remove_robbers(original_list, elements_tuples_to_remove):
+    elements_to_remove = {element_tuple[1] for element_tuple in elements_tuples_to_remove}
+    return [item for item in original_list if item[1] not in elements_to_remove]
+
 def print_colored(message, force=False):
     if DEBUG_MODE or force:
         color = COLORS[PID % len(COLORS)]
@@ -101,8 +109,8 @@ def SEND_HOUSES():
     for i in range(NUM_PROCESSES):
         if i != PID and i != 0:
             comm.send(message.serialize(), dest=i, tag=Message.Type.SEND_HOUSES.value)
-    house_queue = house_queue[len(houses):]
-    robber_queue = robber_queue[len(houses):]
+    house_queue = remove_houses(house_queue, message.houses)
+    robber_queue = remove_robbers(robber_queue, message.houses)
     print_colored(f"Updated house_queue: {house_queue} and robber_queue {robber_queue}")
 
 def OK_ROBBER_QUEUE(pid):
@@ -131,9 +139,8 @@ def RCV():
                 if house[1] == PID:
                     accepted = 0
                     process_house(house[0])
-            robber_queue.sort()
-            house_queue = house_queue[len(message.houses):]
-            robber_queue = robber_queue[len(message.houses):]
+            house_queue = remove_houses(house_queue, message.houses)
+            robber_queue = remove_robbers(robber_queue, message.houses)
             print_colored(f"Updated house_queue: {house_queue} and robber_queue {robber_queue}")
         elif status.Get_tag() == Message.Type.NEW.value and message.pid == 0:
             house_queue.append(message.house_id)
