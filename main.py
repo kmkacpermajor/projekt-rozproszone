@@ -29,6 +29,7 @@ house_id = 8
 house_queue = [0,1,2,3,4,5,6,7]
 robber_queue = []
 accepted = []
+waiting_ok = []
 done = []
 
 class Message:
@@ -159,9 +160,11 @@ def RCV():
             # if message.pid not in [pid for _, pid in robber_queue]:
             accept_to_robber_queue(message)
         elif status.Get_tag() == Message.Type.OK_ROBBER_QUEUE.value:
-            # if message.pid not in accepted:
-            accepted.append(message.pid)
-            print_colored(f"Accepted from {message.pid}: {accepted}")
+            if message.pid not in accepted:
+                accepted.append(message.pid)
+                print_colored(f"Accepted from {message.pid}: {accepted}")
+            else:
+                waiting_ok.append(message)
         elif status.Get_tag() == Message.Type.SEND_HOUSES.value:
             done.extend([t[0] for t in message.houses])
             for house in message.houses:
@@ -182,6 +185,9 @@ def process_house(house_id):
     global accepted, global_time
     accepted = []
     print_colored(f"Process {PID} on {HOSTNAME} is processing house {house_id}", force=True)
+    for message in waiting_ok:
+        accepted.append(message.pid)
+        print_colored(f"Accepted from {message.pid}: {accepted}")
 
 def robber():
     global accepted
