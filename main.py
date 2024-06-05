@@ -192,7 +192,7 @@ def robber():
             robber_queue.sort()
             print_colored(f"Added to robber_queue: {robber_queue}")
         RCV()
-        if len(accepted) > NUM_PROCESSES - 2:
+        if len(set(accepted)) != len(accepted):
             print_colored(f"{len(robber_queue)}, {len(house_queue)}, {accepted}", force=True)
             END()
         if len(robber_queue) > 0 and len(house_queue) > 0 and len(accepted) == NUM_PROCESSES - 2:
@@ -203,7 +203,7 @@ def robber():
 
 def observer():
     while True:
-        systime.sleep(1)
+        systime.sleep(0.01)
         NEW()
 
 if __name__ == "__main__":
