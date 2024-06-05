@@ -171,7 +171,7 @@ def robber():
 
 def observer():
     while True:
-        systime.sleep(random.uniform(0.1, 1.0))
+        systime.sleep(random.uniform(0.01, 0.1))
         NEW()
 
 if __name__ == "__main__":
