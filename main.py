@@ -29,7 +29,7 @@ house_id = 0
 house_queue = []
 robber_queue = []
 accepted = 0
-waiting = 0
+waiting = []
 done = []
 
 class Message:
@@ -86,6 +86,13 @@ def print_colored(message, force=False):
         color = COLORS[PID % len(COLORS)]
         print(f"{color}[{PID}] {message}{RESET_COLOR}")
 
+def accept_to_robber_queue(message):
+    global robber_queue
+    robber_queue.append((message.time, message.pid))
+    robber_queue.sort()
+    print_colored(f"Added to robber_queue: {robber_queue}")
+    OK_ROBBER_QUEUE(message.pid)
+
 def NEW():
     global house_id
     message = Message(Message.Type.NEW, house_id=house_id)
@@ -122,6 +129,11 @@ def OK_ROBBER_QUEUE(pid):
 def RCV():
     global global_time, accepted, house_queue, robber_queue
     status = MPI.Status()
+
+    for message in waiting:
+        if message.pid not in [pid for _, pid in robber_queue]:
+            accept_to_robber_queue(message)
+
     while comm.Iprobe(source=MPI.ANY_SOURCE, status=status):
         data = comm.recv(source=status.Get_source(), tag=status.Get_tag())
         message = Message.deserialize(data)
@@ -129,10 +141,10 @@ def RCV():
         global_time = max(global_time, message.time)
 
         if status.Get_tag() == Message.Type.ADD_TO_ROBBER_QUEUE.value:
-            robber_queue.append((message.time, message.pid))
-            robber_queue.sort()
-            print_colored(f"Added to robber_queue: {robber_queue}")
-            OK_ROBBER_QUEUE(message.pid)
+            if message.pid not in [pid for _, pid in robber_queue]:
+                accept_to_robber_queue(message)
+            else:
+                waiting.append(message)
         elif status.Get_tag() == Message.Type.OK_ROBBER_QUEUE.value:
             accepted += 1
             print_colored(f"Incremented accepted from {message.pid}: {accepted}")
