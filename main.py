@@ -30,6 +30,7 @@ house_queue = []
 robber_queue = []
 accepted = 0
 waiting = 0
+done = []
 
 class Message:
     class Type(Enum):
@@ -138,16 +139,19 @@ def RCV():
         elif status.Get_tag() == Message.Type.SEND_HOUSES.value:
             for house in message.houses:
                 if house[1] == PID:
-                    accepted = 0
                     process_house(house[0])
             house_queue = remove_houses(house_queue, message.houses)
             robber_queue = remove_robbers(robber_queue, message.houses)
             print_colored(f"Updated house_queue: {house_queue} and robber_queue {robber_queue}")
         elif status.Get_tag() == Message.Type.NEW.value and message.pid == 0:
-            house_queue.append(message.house_id)
-            print_colored(f"Added to house_queue: {house_queue}")
+            if message.house_id not in done:
+                house_queue.append(message.house_id)
+                print_colored(f"Added to house_queue: {house_queue}")
 
 def process_house(house_id):
+    global accepted
+    accepted = 0
+    done.append(house_id)
     print_colored(f"Process {PID} on {HOSTNAME} is processing house {house_id}", force=True)
 
 def robber():
@@ -161,7 +165,6 @@ def robber():
         RCV()
         if len(robber_queue) > 0 and len(house_queue) > 0 and accepted == NUM_PROCESSES - 2:
             if robber_queue[0][1] == PID:
-                accepted = 0
                 to_process = house_queue[0]
                 SEND_HOUSES()
                 process_house(to_process)
