@@ -100,7 +100,7 @@ def accept_to_robber_queue(message):
     global robber_queue
     robber_queue.append((message.time, message.pid))
     robber_queue.sort()
-    print_colored(f"Added to robber_queue: {robber_queue}", force=True)
+    print_colored(f"Added to robber_queue: {robber_queue}")
     OK_ROBBER_QUEUE(message.pid)
 
 def END():
@@ -161,7 +161,7 @@ def RCV():
         elif status.Get_tag() == Message.Type.OK_ROBBER_QUEUE.value:
             # if message.pid not in accepted:
             accepted.append(message.pid)
-            print_colored(f"Accepted from {message.pid}: {accepted}", force=True)
+            print_colored(f"Accepted from {message.pid}: {accepted}")
         elif status.Get_tag() == Message.Type.SEND_HOUSES.value:
             done.extend([t[0] for t in message.houses])
             for house in message.houses:
@@ -173,7 +173,7 @@ def RCV():
         elif status.Get_tag() == Message.Type.NEW.value and message.pid == 0:
             if message.house_id not in done:
                 house_queue.append(message.house_id)
-                print_colored(f"Added to house_queue: {house_queue}", force=True)
+                print_colored(f"Added to house_queue: {house_queue}")
         elif status.Get_tag() == Message.Type.END.value:
             MPI.Finalize()
             sys.exit(1)
@@ -190,10 +190,10 @@ def robber():
             ADD_TO_ROBBER_QUEUE()
             robber_queue.append((global_time, PID))
             robber_queue.sort()
-            print_colored(f"Added to robber_queue: {robber_queue}", force=True)
+            print_colored(f"Added to robber_queue: {robber_queue}")
         RCV()
         if len(accepted) > NUM_PROCESSES - 2:
-            print_colored(f"{len(robber_queue)}, {len(house_queue)}, {accepted}",force=True)
+            print_colored(f"{len(robber_queue)}, {len(house_queue)}, {accepted}", force=True)
             END()
         if len(robber_queue) > 0 and len(house_queue) > 0 and len(accepted) == NUM_PROCESSES - 2:
             if robber_queue[0][1] == PID:
