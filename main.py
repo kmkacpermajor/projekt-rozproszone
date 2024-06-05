@@ -188,10 +188,7 @@ def observer():
         NEW()
 
 if __name__ == "__main__":
-    try:
-        if PID == 0:
-            observer()
-        else:
-            robber()
-    except BaseException:
-        MPI.Finalize()
+    if PID == 0:
+        observer()
+    else:
+        robber()
