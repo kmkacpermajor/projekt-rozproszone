@@ -127,7 +127,7 @@ def SEND_HOUSES():
 def OK_ROBBER_QUEUE(old_message):
     message = Message(Message.Type.OK_ROBBER_QUEUE, req_time=old_message.time)
     print_colored(f"Sending OK_ROBBER_QUEUE to {old_message.pid} message: {message.serialize()}")
-    comm.send(message.serialize(), dest=old_message, tag=Message.Type.OK_ROBBER_QUEUE.value)
+    comm.send(message.serialize(), dest=old_message.pid, tag=Message.Type.OK_ROBBER_QUEUE.value)
 
 def RCV():
     global global_time, accepted, house_queue, robber_queue
