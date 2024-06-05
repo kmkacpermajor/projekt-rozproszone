@@ -152,7 +152,7 @@ def RCV():
 def process_house(house_id):
     global accepted
     accepted = 0
-    print_colored(f"Process {PID} on {HOSTNAME} is processing house {house_id}", force=True)
+    print_colored(f"Process {PID} on {HOSTNAME} is processing house {house_id}")
 
 def robber():
     global accepted
