@@ -28,7 +28,7 @@ global_time = 0
 house_id = 8
 house_queue = [0,1,2,3,4,5,6,7]
 robber_queue = []
-accepted = 0
+accepted = []
 waiting = []
 done = []
 
@@ -146,8 +146,9 @@ def RCV():
             else:
                 waiting.append(message)
         elif status.Get_tag() == Message.Type.OK_ROBBER_QUEUE.value:
-            accepted += 1
-            print_colored(f"Incremented accepted from {message.pid}: {accepted}", force=True)
+            if message.pid not in accepted:
+                accepted.append(message.pid)
+                print_colored(f"Accepted from {message.pid}: {accepted}", force=True)
         elif status.Get_tag() == Message.Type.SEND_HOUSES.value:
             done.extend([t[0] for t in message.houses])
             for house in message.houses:
@@ -162,8 +163,9 @@ def RCV():
                 print_colored(f"Added to house_queue: {house_queue}", force=True)
 
 def process_house(house_id):
-    global accepted
-    accepted = 0
+    global accepted, global_time
+    accepted = []
+    last_clear_time = global_time
     print_colored(f"Process {PID} on {HOSTNAME} is processing house {house_id}", force=True)
 
 def robber():
@@ -175,9 +177,9 @@ def robber():
             robber_queue.sort()
             print_colored(f"Added to robber_queue: {robber_queue}", force=True)
         RCV()
-        if accepted > NUM_PROCESSES - 2:
+        if len(accepted) > NUM_PROCESSES - 2:
             print_colored(f"{len(robber_queue)}, {len(house_queue)}, {accepted}",force=True)
-        if len(robber_queue) > 0 and len(house_queue) > 0 and accepted == NUM_PROCESSES - 2:
+        if len(robber_queue) > 0 and len(house_queue) > 0 and len(accepted) == NUM_PROCESSES - 2:
             if robber_queue[0][1] == PID:
                 to_process = house_queue[0]
                 SEND_HOUSES()
