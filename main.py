@@ -180,6 +180,7 @@ def robber():
                 to_process = house_queue[0]
                 SEND_HOUSES()
                 process_house(to_process)
+        print_colored("Finished loop", force=True)
 
 def observer():
     while True:
