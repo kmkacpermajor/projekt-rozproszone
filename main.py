@@ -29,8 +29,6 @@ house_id = 8
 house_queue = [0,1,2,3,4,5,6,7]
 robber_queue = []
 accepted = []
-waiting_acc = []
-waiting_ok = []
 done = []
 
 class Message:
@@ -40,13 +38,12 @@ class Message:
         SEND_HOUSES = 2
         OK_ROBBER_QUEUE = 3
 
-    def __init__(self, msg_type=None, house_id=None, houses=None, time=None, pid=None, req_time=None):
+    def __init__(self, msg_type=None, house_id=None, houses=None, time=None, pid=None):
         self.time = time if time is not None else self.increment_global_time()
         self.pid = pid if pid is not None else PID
         self.msg_type = msg_type
         self.house_id = house_id
         self.houses = houses
-        self.req_time = req_time
 
     def serialize(self):
         return {
@@ -54,8 +51,7 @@ class Message:
             'pid': self.pid,
             'type': self.msg_type.value,
             'house_id': self.house_id,
-            'houses': self.houses,
-            'req_time': self.req_time,
+            'houses': self.houses
         }
 
     @staticmethod
@@ -65,8 +61,7 @@ class Message:
             pid=data.get('pid', None) if 'pid' in data else PID,
             msg_type=Message.Type(data['type']),
             house_id=data.get('house_id'),
-            houses=data.get('houses'),
-            req_time=data.get('req_time')
+            houses=data.get('houses')
         )
     
     @staticmethod
@@ -95,7 +90,7 @@ def accept_to_robber_queue(message):
     robber_queue.append((message.time, message.pid))
     robber_queue.sort()
     print_colored(f"Added to robber_queue: {robber_queue}", force=True)
-    OK_ROBBER_QUEUE(message)
+    OK_ROBBER_QUEUE(message.pid)
 
 def NEW():
     global house_id
@@ -125,10 +120,10 @@ def SEND_HOUSES():
     robber_queue = remove_robbers(robber_queue, message.houses)
     print_colored(f"Updated house_queue: {house_queue} and robber_queue {robber_queue}")
 
-def OK_ROBBER_QUEUE(old_message):
-    message = Message(Message.Type.OK_ROBBER_QUEUE, req_time=old_message.time)
-    print_colored(f"Sending OK_ROBBER_QUEUE to {old_message.pid} message: {message.serialize()}")
-    comm.send(message.serialize(), dest=old_message.pid, tag=Message.Type.OK_ROBBER_QUEUE.value)
+def OK_ROBBER_QUEUE(pid):
+    message = Message(Message.Type.OK_ROBBER_QUEUE)
+    print_colored(f"Sending OK_ROBBER_QUEUE to {pid} message: {message.serialize()}")
+    comm.send(message.serialize(), dest=pid, tag=Message.Type.OK_ROBBER_QUEUE.value)
 
 def RCV():
     global global_time, accepted, house_queue, robber_queue
@@ -145,7 +140,7 @@ def RCV():
             accept_to_robber_queue(message)
         elif status.Get_tag() == Message.Type.OK_ROBBER_QUEUE.value:
             # if message.pid not in accepted:
-            accepted.append((message.req_time, message.pid))
+            accepted.append(message.pid)
             print_colored(f"Accepted from {message.pid}: {accepted}", force=True)
         elif status.Get_tag() == Message.Type.SEND_HOUSES.value:
             done.extend([t[0] for t in message.houses])
@@ -184,7 +179,7 @@ def robber():
 
 def observer():
     while True:
-        systime.sleep(0.001)
+        systime.sleep(1)
         NEW()
 
 if __name__ == "__main__":
