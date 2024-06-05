@@ -68,8 +68,6 @@ class Message:
     @staticmethod
     def increment_global_time():
         global global_time
-        if global_time is None:
-            global_time = 0
         global_time += 1
         return global_time
 
@@ -98,7 +96,7 @@ def END():
     print_colored(f"Sending END message")
     for i in range(NUM_PROCESSES):
         if i != PID:
-            comm.send(message, dest=i, tag=Message.Type.END.value)
+            comm.send(message.serialize(), dest=i, tag=Message.Type.END.value)
     sys.exit(1)
 
 def NEW():
