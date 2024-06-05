@@ -97,6 +97,7 @@ def END():
     for i in range(NUM_PROCESSES):
         if i != PID:
             comm.send(message.serialize(), dest=i, tag=Message.Type.END.value)
+    chuj
     sys.exit(1)
 
 def NEW():
@@ -162,6 +163,7 @@ def RCV():
                 house_queue.append(message.house_id)
                 print_colored(f"Added to house_queue: {house_queue}", force=True)
         elif status.Get_tag() == Message.Type.END.value:
+            chuj
             sys.exit(1)
 
 def process_house(house_id):
