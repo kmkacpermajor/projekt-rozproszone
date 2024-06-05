@@ -76,8 +76,20 @@ def remove_houses(original_list, elements_tuples_to_remove):
     return [item for item in original_list if item not in elements_to_remove]
 
 def remove_robbers(original_list, elements_tuples_to_remove):
-    elements_to_remove = {element_tuple[1] for element_tuple in elements_tuples_to_remove}
-    return [item for item in original_list if item[1] not in elements_to_remove]
+    elements_to_remove = [element_tuple[1] for element_tuple in elements_tuples_to_remove]
+    removal_count = {element: 0 for element in elements_to_remove}
+    
+    result = []
+    for item in original_list:
+        if item[1] in elements_to_remove:
+            if removal_count[item[1]] == 0:
+                removal_count[item[1]] += 1
+            else:
+                result.append(item)
+        else:
+            result.append(item)
+    
+    return result
 
 def print_colored(message, force=False):
     if DEBUG_MODE or force:
