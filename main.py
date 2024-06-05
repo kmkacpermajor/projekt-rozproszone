@@ -25,8 +25,8 @@ PID = comm.Get_rank()
 NUM_PROCESSES = comm.Get_size()
 
 global_time = 0
-house_id = 0
-house_queue = []
+house_id = 8
+house_queue = [0,1,2,3,4,5,6,7]
 robber_queue = []
 accepted = 0
 waiting = []
@@ -90,7 +90,7 @@ def accept_to_robber_queue(message):
     global robber_queue
     robber_queue.append((message.time, message.pid))
     robber_queue.sort()
-    print_colored(f"Added to robber_queue: {robber_queue}")
+    print_colored(f"Added to robber_queue: {robber_queue}", force=True)
     OK_ROBBER_QUEUE(message.pid)
 
 def NEW():
