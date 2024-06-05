@@ -142,7 +142,7 @@ def RCV():
             accept_to_robber_queue(message)
         elif status.Get_tag() == Message.Type.OK_ROBBER_QUEUE.value:
             # if message.pid not in accepted:
-            accepted.append(message.pid)
+            accepted.append((message.time, message.pid))
             print_colored(f"Accepted from {message.pid}: {accepted}", force=True)
         elif status.Get_tag() == Message.Type.SEND_HOUSES.value:
             done.extend([t[0] for t in message.houses])
