@@ -65,7 +65,8 @@ class Message:
             pid=data.get('pid', None) if 'pid' in data else PID,
             msg_type=Message.Type(data['type']),
             house_id=data.get('house_id'),
-            houses=data.get('houses')
+            houses=data.get('houses'),
+            req_time=data.get('req_time')
         )
     
     @staticmethod
