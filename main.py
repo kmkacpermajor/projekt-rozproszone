@@ -131,6 +131,7 @@ def RCV():
                 if house[1] == PID:
                     accepted = 0
                     process_house(house[0])
+            robber_queue.sort()
             house_queue = house_queue[len(message.houses):]
             robber_queue = robber_queue[len(message.houses):]
             print_colored(f"Updated house_queue: {house_queue} and robber_queue {robber_queue}")
@@ -163,7 +164,10 @@ def observer():
         NEW()
 
 if __name__ == "__main__":
-    if PID == 0:
-        observer()
-    else:
-        robber()
+    try:
+        if PID == 0:
+            observer()
+        else:
+            robber()
+    except BaseException:
+        MPI.Finalize()
