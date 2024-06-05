@@ -147,12 +147,12 @@ def RCV():
         elif status.Get_tag() == Message.Type.NEW.value and message.pid == 0:
             if message.house_id not in done:
                 house_queue.append(message.house_id)
-                print_colored(f"Added to house_queue: {house_queue}",force=True)
+                print_colored(f"Added to house_queue: {house_queue}")
 
 def process_house(house_id):
     global accepted
     accepted = 0
-    print_colored(f"Process {PID} on {HOSTNAME} is processing house {house_id}")
+    print_colored(f"Process {PID} on {HOSTNAME} is processing house {house_id}", force=True)
 
 def robber():
     global accepted
