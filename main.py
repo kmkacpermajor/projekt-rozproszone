@@ -94,7 +94,7 @@ def accept_to_robber_queue(message):
     OK_ROBBER_QUEUE(message.pid)
 
 def END():
-    message = Message()
+    message = Message(Message.Type.END)
     print_colored(f"Sending END message")
     for i in range(NUM_PROCESSES):
         if i != PID:
