@@ -1,3 +1,5 @@
+import socket
+import sys
 from mpi4py import MPI
 import time as systime
 import random
@@ -14,6 +16,9 @@ COLORS = [
 ]
 
 RESET_COLOR = '\033[0m'
+
+DEBUG_MODE = "-d" in sys.argv
+HOSTNAME = socket.gethostname()
 
 comm = MPI.COMM_WORLD
 PID = comm.Get_rank()
@@ -67,9 +72,10 @@ class Message:
         global_time += 1
         return global_time
 
-def print_colored(message):
-    color = COLORS[PID % len(COLORS)]
-    print(f"{color}[{PID}] {message}{RESET_COLOR}")
+def print_colored(message, force=False):
+    if DEBUG_MODE or force:
+        color = COLORS[PID % len(COLORS)]
+        print(f"{color}[{PID}] {message}{RESET_COLOR}")
 
 def NEW():
     global house_id
@@ -133,7 +139,7 @@ def RCV():
             print_colored(f"Added to house_queue: {house_queue}")
 
 def process_house(house_id):
-    print(f"Process {PID} is processing house {house_id}")
+    print_colored(f"Process {PID} on {HOSTNAME} is processing house {house_id}", force=True)
 
 def robber():
     global accepted
