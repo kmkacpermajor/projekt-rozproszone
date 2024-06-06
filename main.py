@@ -157,7 +157,6 @@ def RCV():
         global_time = max(global_time, message.time)
 
         if status.Get_tag() == Message.Type.ADD_TO_ROBBER_QUEUE.value:
-            # if message.pid not in [pid for _, pid in robber_queue]:
             accept_to_robber_queue(message)
         elif status.Get_tag() == Message.Type.OK_ROBBER_QUEUE.value:
             if message.pid not in accepted:
@@ -186,7 +185,7 @@ def process_house(house_id):
     accepted = []
     seen_pids = []
     print_colored(f"Process {PID} on {HOSTNAME} is processing house {house_id}", force=True)
-    for message in waiting_ok[:]:  # Create a copy of the list to iterate over while modifying the original
+    for message in waiting_ok[:]:
         if message.pid not in seen_pids:
             seen_pids.append(message.pid)
             accepted.append(message.pid)
@@ -207,6 +206,7 @@ def robber():
             END()
         if len(robber_queue) > 0 and len(house_queue) > 0 and len(accepted) == NUM_PROCESSES - 2:
             if robber_queue[0][1] == PID:
+                print_colored("Im first in queue, sending houses", force=True)
                 to_process = house_queue[0]
                 SEND_HOUSES()
                 process_house(to_process)
