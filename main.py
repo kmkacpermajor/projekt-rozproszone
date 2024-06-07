@@ -95,7 +95,7 @@ def remove_robbers(original_list, elements_tuples_to_remove):
 def print_colored(message, force=False):
     if DEBUG_MODE or force:
         color = COLORS[PID % len(COLORS)]
-        print(f"{color}[{PID}] {message}{RESET_COLOR}")
+        print(f"{color}[{message.time}] [{PID}] {message}{RESET_COLOR}")
 
 def accept_to_robber_queue(message):
     global robber_queue
